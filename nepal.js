@@ -71,6 +71,7 @@ var nepal = (function () {
             height = options.height,
             viewBox = options.viewBox,
             preserveAspectRatio = options.preserveAspectRatio,
+            subdivisionId = options.subdivisionId,
             admLevelType = options.admLevelType,
             nepalJsonPath = options.nepalJsonPath,
             dataJsonPath = options.dataJsonPath,
@@ -91,8 +92,7 @@ var nepal = (function () {
             .attr("width", width)
             .attr("height", height)
             .attr("viewBox", viewBox)
-            .attr("preserveAspectRatio", preserveAspectRatio)
-            .style("border", "1px solid black");
+            .attr("preserveAspectRatio", preserveAspectRatio);
 
         projection = d3.geo.mercator();
 
@@ -112,25 +112,57 @@ var nepal = (function () {
                 quantile;
 
             switch (admLevelType) {
-            case "devregion":
-                admLevel = topojson.feature(npl, npl.objects.regions);
-                break;
+                case "devregion":
+                    admLevel = topojson.feature(npl, npl.objects.regions);
+                    break;
 
-            case "zone":
-                admLevel = topojson.feature(npl, npl.objects.zones);
-                break;
+                case "zone":
+                    if (!subdivisionId) {
+                        admLevel = topojson.feature(npl, npl.objects.zones);
+                    } else {
+                        admLevel = topojson.feature(npl, {
+                            type: "GeometryCollection",
+                            geometries: npl.objects.zones.geometries.filter(function (d) {
+                                return d.id.substring(0, 1) === subdivisionId;
+                            })
+                        });
+                    }
+                    break;
 
-            case "district":
-                admLevel = topojson.feature(npl, npl.objects.districts);
-                break;
+                case "district":
+                    if (!subdivisionId) {
+                        admLevel = topojson.feature(npl, npl.objects.districts);
+                    } else {
+                        admLevel = topojson.feature(npl, {
+                            type: "GeometryCollection",
+                            geometries: npl.objects.districts.geometries.filter(function (d) {
+                                return d.id.substring(0, 3) === subdivisionId;
+                            })
+                        });
+                    }
+                    break;
 
-            case "vdc":
-                admLevel = topojson.feature(npl, npl.objects.vdcs);
-                break;
+                case "vdc":
+                    if (!subdivisionId) {
+                        admLevel = topojson.feature(npl, npl.objects.vdcs);
+                    } else {
+                        admLevel = topojson.feature(npl, {
+                            type: "GeometryCollection",
+                            geometries: npl.objects.vdcs.geometries.filter(function (d) {
+                                return d.id.substring(0, 5) === subdivisionId;
+                            })
+                        });
+                    }
+                    break;
 
-            default:
-                console.log("Valid Administrative Level Types: devregion, zone, district, and vdc.");
-                break;
+                default:
+                    if (!subdivisionId) {
+                        console.log("Valid Administrative Level Types: devregion, zone, district, and vdc.");
+                    } else {
+                        console.log("Valid Administrative Level Types: zone, district, and vdc.");
+                    }
+
+                    break;
             }
 
             projection
