@@ -153,7 +153,7 @@ var nepal = (function () {
                             })
                         });
                     }
-                    console.log(admLevel);
+
                     break;
 
                 default:
