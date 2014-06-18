@@ -71,7 +71,7 @@ var nepal = (function () {
             height = options.height,
             viewBox = options.viewBox,
             preserveAspectRatio = options.preserveAspectRatio,
-            subdivisionId = options.subdivisionId,
+            subdivisionIds = options.subdivisionIds,
             admLevelType = options.admLevelType,
             nepalJsonPath = options.nepalJsonPath,
             dataJsonPath = options.dataJsonPath,
@@ -117,46 +117,47 @@ var nepal = (function () {
                     break;
 
                 case "zone":
-                    if (!subdivisionId) {
+                    if (!subdivisionIds) {
                         admLevel = topojson.feature(npl, npl.objects.zones);
                     } else {
                         admLevel = topojson.feature(npl, {
                             type: "GeometryCollection",
                             geometries: npl.objects.zones.geometries.filter(function (d) {
-                                return d.id.substring(0, 1) === subdivisionId;
+                                return subdivisionIds.indexOf(d.id.substring(0, 1)) > -1;
                             })
                         });
                     }
                     break;
 
                 case "district":
-                    if (!subdivisionId) {
+                    if (!subdivisionIds) {
                         admLevel = topojson.feature(npl, npl.objects.districts);
                     } else {
                         admLevel = topojson.feature(npl, {
                             type: "GeometryCollection",
                             geometries: npl.objects.districts.geometries.filter(function (d) {
-                                return d.id.substring(0, 3) === subdivisionId;
+                                return subdivisionIds.indexOf(d.id.substring(0, 3)) > -1;
                             })
                         });
                     }
                     break;
 
                 case "vdc":
-                    if (!subdivisionId) {
+                    if (!subdivisionIds) {
                         admLevel = topojson.feature(npl, npl.objects.vdcs);
                     } else {
                         admLevel = topojson.feature(npl, {
                             type: "GeometryCollection",
                             geometries: npl.objects.vdcs.geometries.filter(function (d) {
-                                return d.id.substring(0, 5) === subdivisionId;
+                                return subdivisionIds.indexOf(d.id.substring(0, 5)) > -1;
                             })
                         });
                     }
+                    console.log(admLevel);
                     break;
 
                 default:
-                    if (!subdivisionId) {
+                    if (!subdivisionIds) {
                         console.log("Valid Administrative Level Types: devregion, zone, district, and vdc.");
                     } else {
                         console.log("Valid Administrative Level Types: zone, district, and vdc.");
